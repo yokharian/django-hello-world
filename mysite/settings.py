@@ -20,11 +20,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-$&!fjs+si!33y4-&m6fmtg&p&c+g!ie1i^uznajbbx=_r2=jjt"
+# The secret key
+SECRET_KEY = getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(getenv("DEBUG", default=0))
 
 # check for Codespaces name
 CODESPACES = getenv('CODESPACE_NAME') is not None
@@ -37,7 +37,7 @@ if CODESPACES:
     CODESPACE_DOMAIN = f"{getenv('CODESPACE_NAME')}-{PORT}.preview.app.github.dev"
     ALLOWED_HOSTS = [CODESPACE_DOMAIN, 'localhost', '127.0.0.1']
 else:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # local config
+    ALLOWED_HOSTS = getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 
 # Application definition
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -84,14 +85,18 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
+     'default': {
+         'ENGINE': 'django.db.backends.{}'.format(
+             getenv('DATABASE_ENGINE', 'sqlite3')
+         ),
+         'NAME': getenv('DATABASE_NAME', 'polls'),
+         'USER': getenv('DATABASE_USERNAME', 'myprojectuser'),
+         'PASSWORD': getenv('DATABASE_PASSWORD', 'password'),
+         'HOST': getenv('DATABASE_HOST', '127.0.0.1'),
+         'PORT': getenv('DATABASE_PORT', 5432),
+     }
+ }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
