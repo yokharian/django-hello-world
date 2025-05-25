@@ -10,10 +10,10 @@ services:
    volumes:
      - postgres_data:/var/lib/postgresql/data
    env_file:
-     - .env
+     - .env.example
 
  django-web:
-   build: .
+   build: ..
    container_name: django-docker
    ports:
      - "8000:8000"
@@ -32,6 +32,6 @@ services:
      DATABASE_HOST: ${DATABASE_HOST}
      DATABASE_PORT: ${DATABASE_PORT}
    env_file:
-     - .env
+     - .env.example
 volumes:
    postgres_data:

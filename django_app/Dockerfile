@@ -36,7 +36,7 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin/
 WORKDIR /app
 
 # Copy application code
-COPY --chown=appuser:appuser . .
+COPY --chown=appuser:appuser .. .
 
 # Set environment variables to optimize Python
 ENV PYTHONDONTWRITEBYTECODE=1
